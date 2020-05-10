@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<beans xmlns="http://www.springframework.org/schema/beans"   
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:context="http://www.springframework.org/schema/context" 
+  xmlns:aop="http://www.springframework.org/schema/aop"
+  xmlns:tx="http://www.springframework.org/schema/tx"
+  xmlns:util="http://www.springframework.org/schema/util"
+  xsi:schemaLocation="http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/tx
+    http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+    http://www.springframework.org/schema/aop
+    http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+    http://www.springframework.org/schema/util
+    http://www.springframework.org/schema/util/spring-util-4.0.xsd">
+	
+	<context:property-placeholder location="classpath:jdbc.properties"></context:property-placeholder>
+	<context:component-scan base-package="com.laboratory"></context:component-scan>
+	<!-- 添加注解支持 -->
+	<tx:annotation-driven />
+	<context:annotation-config></context:annotation-config>
+
+	<bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource">
+		 <property name="driverClass">
+	      	<value>${jdbc_driverClassName}</value>
+	    </property>
+	    <property name="jdbcUrl">
+	      	<value>${jdbc_url}</value>
+	    </property>
+	    <property name="user">
+	      	<value>${jdbc_username}</value>
+	    </property>
+	    <property name="password">
+	     	<value>${jdbc_password}</value>
+	    </property>
+	    
+	    <property name="acquireIncrement" value="${c3p0_acquireIncrement}" />
+	    <!-- 初始化连接大小 -->
+	    <property name="initialPoolSize">
+	        <value>${c3p0_initialPoolSize}</value>
+	    </property>
+	    <!-- 获取连接最大等待时间 -->
+	    <property name="maxIdleTime">
+	        <value>${c3p0_maxIdleTime}</value>
+	    </property>
+	    <!-- 连接池最大空闲 -->
+	    <property name="maxPoolSize">
+	        <value>${c3p0_maxPoolSize}</value>
+	    </property>
+	    <!-- 连接池最小空闲 -->
+	    <property name="minPoolSize">
+	        <value>${c3p0_minPoolSize}</value>
+	    </property>
+	</bean>
+	
+	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+  		<property name="dataSource" ref="dataSource"></property>
+ 	    <property name="configLocation" value="classpath:SqlMapConfig.xml"></property>
+  		<property name="mapperLocations" value="classpath*:com/laboratory/dao/*.xml"></property>
+  	    <property name="typeAliasesPackage" value="com.laboratory.po"></property>
+  	</bean>
+	
+	<bean id="sqlSession" class="org.mybatis.spring.SqlSessionTemplate" scope="prototype">
+  		<constructor-arg index="0" ref="sqlSessionFactory"></constructor-arg>
+  	</bean>
+  	
+  	<bean id="multipartResolver"
+	    class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+	    <property name="maxUploadSize" value="10000000"></property>
+	</bean>
+  	
+  	<!-- 事務管理 -->
+  	<bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">  
+  		<property name="dataSource" ref="dataSource" /> 
+	</bean>
+	
+	
+	<tx:advice id="transactionAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="find*" propagation="REQUIRED"/>
+			<tx:method name="save*" propagation="REQUIRED"/>
+			<tx:method name="delete*" propagation="REQUIRED" />
+			<tx:method name="update*" propagation="REQUIRED" />
+		</tx:attributes>
+	</tx:advice>
+	
+	<aop:config>
+		<aop:advisor pointcut="execution(* com.laboratory.service.*..*(..))"
+		advice-ref="transactionAdvice" />
+	</aop:config>
+	
+  </beans>

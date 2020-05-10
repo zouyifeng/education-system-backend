@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.StudentMapper" >
+  	
+  	<select id="selectByPage" resultType="Student">
+  		select * from student 
+  	</select>
+  	
+  	<select id="selectSelective" parameterType="Student" resultType="Student">
+  		select * from student
+  		<trim prefix="where" suffixOverrides="and">
+  			<if test="name">
+  				name like "%"#{name}"%" and
+  			</if>
+  			<if test="telephone">
+  				telephone like "%"#{telephone}"%" and
+  			</if>
+  			<if test="school">
+  				school like "%"#{school}"%" and
+  			</if>
+  		</trim>
+  	</select>
+  	
+  	<select id="selectByPrimaryKey" parameterType="int" resultType="Student">
+  		select * from student where id = #{id}
+  	</select>
+  	
+  	<insert id="insertSelective" parameterType="Student" keyProperty="id"  useGeneratedKeys="true"> 
+  		insert into student(name,telephone,email,face,introduction,classes_count,code,parent_name,school) 
+  			values(#{name},#{telephone},#{email},#{face},#{introduction},#{classesCount},#{code},#{parentName},#{school})
+  	</insert>
+  	
+  	<update id="updateSelective" parameterType="Student">
+  		update student set name=#{name}
+  		<if test="telephone!=null">
+  			,telephone=#{telephone}
+  		</if>
+  		<if test="email!=null">
+	  		,email=#{email}
+  		</if>
+  		<if test="introduction!=null">
+	  		,introduction=#{introduction}
+  		</if>
+		<if test="parentName!=null">
+	  		,parent_name=#{parentName}
+		</if>
+		<if test="classesCount!=null">
+	  		,classes_count=#{classesCount}  
+		</if>
+  		<if test="face!=null">
+  			, face=#{face}
+  		</if> 
+  		<if test="school!=null">
+  			,school=#{school}
+  		</if>
+  		<if test="code">
+  			,code=#{code}
+  		</if>
+  		where id = #{id}
+  	</update>
+  	
+  	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from student where id = #{id}
+  	</delete>
+  	
+</mapper>

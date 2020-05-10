@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.TeacherMapper" >
+  	
+  	<select id="selectByPage" resultType="Teacher">
+  		select * from teacher 
+  	</select>
+  	
+  	<select id="selectSelective" parameterType="Teacher" resultType="Teacher">
+  		select * from teacher
+  		<trim prefix="where" suffixOverrides="and">
+  			<if test="name!=null">
+  				name like "%"#{name}"%" and
+  			</if>
+  			<if test="majorName!=null">
+  				major_name like "%"#{majorName}"%" and
+  			</if>
+  		</trim>
+  	</select>
+  	
+  	<select id="selectByPrimaryKey" parameterType="int" resultType="com.laboratory.dto.TeacherDto">
+  		select * from teacher where id = #{id}
+  	</select>
+  	
+  	<insert id="insertSelective" parameterType="com.laboratory.dto.TeacherDto" keyProperty="id"  useGeneratedKeys="true"> 
+  		insert into teacher(name,telephone,email,face,introduction,classes_count,major_name) 
+  			       values(#{name},#{telephone},#{email},#{face},#{introduction},#{classesCount},#{majorName})
+  	</insert>
+  	
+  	<update id="updateSelective" parameterType="Teacher">
+  		update teacher set name=#{name}
+  		<if test="telephone!=null">
+  			,telephone=#{telephone}
+  		</if>
+  		<if test="email!=null">
+	  		,email=#{email}
+  		</if>
+  		<if test="introduction!=null">
+	  		,introduction=#{introduction}
+  		</if>
+		<if test="majorName!=null">
+	  		,major_name=#{majorName}
+		</if>
+		<if test="classesCount!=null">
+	  		,classes_count=#{classesCount}  
+		</if>
+  		<if test="face!=null">
+  			, face=#{face}
+  		</if> 
+  		where id = #{id}
+  	</update>
+  	
+  	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from teacher where id = #{id}
+  	</delete>
+  	
+</mapper>

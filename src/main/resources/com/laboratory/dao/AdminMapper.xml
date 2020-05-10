@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.AdminMapper">
+	<resultMap type="Admin" id="BaseMap">
+  		<id column="id" property="id"/>
+  		<result column="username" property="username"/>
+  		<result column="password" property="password"/>
+  		<result column="type" property="type"/>
+  	</resultMap>
+  	
+  	<select id="selectByPrinciple" parameterType="Admin" resultType="Admin">
+  		select * from admin where username=#{username} and password = #{password} and type=#{type}
+  	</select>
+  	
+  	 <select id="selectSelective" parameterType="Admin" resultType="Admin">
+  		select * from admin 
+  		<trim prefix="where" suffixOverrides="and">
+  			<if test="openId!=null">
+  				open_id = #{openId} and
+  			</if>
+  		</trim>
+  	</select>
+  	
+  	<select id="selectAll" resultMap="BaseMap">
+  		select *from admin 
+  	</select>
+  	
+  	<insert id="insertSelective" parameterType="Admin"> 
+  		insert into admin (username, password, type, user_id) values (#{username},#{password}, #{type}, #{userId})
+  	</insert>
+  	
+	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from admin where id = #{id}
+  	</delete>
+  	
+  	<update id="updateSelective" parameterType="Admin">
+  		update admin set password = #{password}
+		<if test="username">
+			,username = #{username}
+		</if>
+		<if test="openId">
+			,open_id = #{openId}
+		</if>
+  		where id = #{id} 
+  	</update>
+</mapper>

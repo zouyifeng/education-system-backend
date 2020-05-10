@@ -1,0 +1,12 @@
+.settings
+target
+.classpath
+.project
+**/*/jdbc.properties
+src/main/webapp/pages/*
+.idea/*
+natapp
+natapp.sh
+nohup.out
+system.log
+wechat-education-system.iml

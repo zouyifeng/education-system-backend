@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<beans xmlns="http://www.springframework.org/schema/beans" 
+  xmlns:p="http://www.springframework.org/schema/p"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:context="http://www.springframework.org/schema/context"
+  xmlns:mvc="http://www.springframework.org/schema/mvc"
+  xsi:schemaLocation=" 
+    http://www.springframework.org/schema/beans
+    http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+    http://www.springframework.org/schema/context
+    http://www.springframework.org/schema/context/spring-context-4.0.xsd
+    http://www.springframework.org/schema/mvc
+    http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd"> 
+     
+    <!-- 扫描controller（controller层注入） -->
+    <context:component-scan base-package="com.laboratory.controller"/>
+    <!--  
+    <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping"></bean>
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter"></bean>
+  	-->
+    
+    <!-- @ControllerAdvice 需要用到annotatoin-driven, 在这里定义json转换 -->
+	<mvc:annotation-driven> 
+		<mvc:message-converters>
+			<ref bean="jsonConverter" />
+		</mvc:message-converters>
+	</mvc:annotation-driven>
+
+
+
+	<!-- <bean id="jsonObjectMapper" class="com.laboratory.util.CustomObjectMapper"></bean> -->
+
+	<!-- 输出对象转JSON支持 -->
+	<bean id="jsonConverter" class="org.springframework.http.converter.json.MappingJackson2HttpMessageConverter">
+		<property name="objectMapper" ref="jsonObjectMapper" />
+	</bean>
+ 
+   <!-- 避免IE在ajax请求时，返回json出现下载 -->
+    <bean id="jacksonMessageConverter" class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">    
+        <property name="supportedMediaTypes">
+            <list>
+                <value>text/html;charset=UTF-8</value>
+            </list>
+        </property>
+    </bean>
+    
+    <mvc:interceptors>
+	  	<mvc:interceptor >
+		  	<mvc:mapping path="/admin/**/"/>
+		  	<bean class="com.laboratory.interceptor.LoginInterceptor"></bean>
+	  	</mvc:interceptor>
+   </mvc:interceptors>
+   
+    <mvc:resources location="/pages/js/" mapping="/js/**"/>
+    <mvc:resources location="/pages/img/" mapping="/img/**"/>
+    <mvc:resources location="/pages/css/" mapping="/css/**"/>
+  	
+  	<!-- 文件上传 -->
+  	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+    	<!-- 上传的文件的最大尺寸为5MB -->
+    	<property name="maxUploadSize">
+    		<value>5242880</value>
+    	</property>
+    </bean>
+  
+  
+   <!-- 对模型视图添加前后缀 -->
+    <bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver"
+      p:prefix="/pages/" p:suffix=".jsp"/>
+      
+
+</beans>

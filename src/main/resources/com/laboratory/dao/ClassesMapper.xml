@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.ClassesMapper" >
+  	<resultMap type="Classes" id="BaseMap">
+  		<id column="id" property="id"/>
+  		<result column="subject" property="subject"/>
+  		<result column="context" property="context"/>
+  		<result column="sumary" property="sumary"/>
+  		<result column="date" property="date"/>
+  	</resultMap>
+ 
+  	<resultMap type="Classes" id="ClassesMap" extends="BaseMap">
+  		<collection property="pictures" ofType="classesPicture">
+  			<id column="picture_id" property="id"/>
+  			<result column="path" property="path"/>
+  			<result column="description" property="description"/>
+  		</collection>
+  	</resultMap>
+  	
+  	<resultMap type="Member" id="MemberMap">
+		<id column="id" property="id"></id>
+		<result column="type" property="type"></result>
+		<result column="name" property="name"></result>
+  	</resultMap>
+  	
+  	<!-- 分页查询研究成果 显示在主页的数据-->
+  	<select id="selectByPage" resultMap="ClassesMap">
+  		select classes.*, picture.id as picture_id,picture.path,picture.description from classes 
+		LEFT JOIN picture ON picture.classes_id = classes.id and  picture.state = 1 order by date DESC
+  	</select>
+  	
+  	<!-- 这个是不查询图片的 -->
+  	<select id="selectAll" resultMap="BaseMap">
+  		select *from classes order by date DESC
+  	</select>
+  	 
+  	<select id="selectClassMember" parameterType="Classes" resultMap="MemberMap">
+  		select id, name, type from member where classes_id = #{id}
+  	</select>
+  	
+  	<select id="selectByPrimaryKey" parameterType="int" resultMap="ClassesMap">
+  		select * from classes where id = #{id}
+  	</select>
+  	
+  	<!-- 根据查询条件查询研究成果 -->
+  	<select id="selectSelective" parameterType="Classes" resultType="Classes">
+  		select * from classes 
+  		<trim prefix="where" suffixOverrides="and">
+  			<if test="subject!=null">
+  				subject like "%"#{subject}"%" and
+  			</if>
+  			<if test="context!=null">
+  				context like "%"#{context}"%"
+  			</if>
+  		</trim>
+  		order by date DESC
+  	</select>
+  	
+  	<!-- 插入研究成果 -->
+  	<insert id="insertSelective" parameterType="Classes">
+  		insert into classes(subject,context,sumary,date) values(#{subject},#{context},#{sumary},#{date})
+  	</insert>
+  	
+  	<update id="updateSelective" parameterType="Classes">
+  		update classes set subject = #{subject}, sumary = #{sumary}, context = #{context} where id=#{id}
+  	</update>
+  	
+  	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from classes where id = #{id}
+  	</delete>
+</mapper>

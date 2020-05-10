@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.MessageMapper" >
+  	
+  	<select id="updateSelective" parameterType="Message" resultType="Message">
+  		update message SET reply = #{reply}, reply_time = #{replyTime}, status = 1 where id = #{id}
+   	</select>
+  	
+  	<!-- 根据文章发布日期排序 -->
+  	<select id="selectByPage" resultType="Message">
+  		 select * from message ORDER BY create_time DESC
+  	</select>
+
+  	<!-- 根据查询条件查找文章 -->
+  	<select id="selectSelective" parameterType="Message" resultType="Message">
+  		select * from message
+  		<trim prefix="where" suffixOverrides="and"> 
+  			<if test="status != null">
+  				status = #{status} 
+  			</if>
+  		</trim>
+  	</select>
+  	
+  	<insert id="insertSelective" parameterType="Message">
+		insert into message(question, reply, create_time, reply_time, status) values(#{question}, #{reply}, #{createTime}, #{replyTime}, 0);  	
+  	</insert>
+  	
+  	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from message where id = #{id}
+  	</delete>
+  	
+</mapper>

@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.NewsMapper" >
+	<resultMap type="Picture" id="BaseMap">
+  		<id column="id" property="id"/>
+  		<result column="path" property="path"/>
+  		<result column="description" property="description"/>
+  		<result column="news_id" property="newsId"/>
+  	</resultMap>
+  	
+  	<select id="selectByPrimaryKey" parameterType="int" resultType="News">
+  		select * from news where id=#{id}
+  	</select>
+  	
+  	<select id="updateSelective" parameterType="News" resultType="News">
+  		update News SET title = #{title}, context = #{context}, date=#{date}, author=#{author}, source=#{source} ,type=#{type} where id=#{id}
+  	</select>
+  	
+  	<!-- 根据文章发布日期排序 -->
+  	<select id="selectByPage" resultType="News">
+  		 select * from news ORDER BY date DESC
+  	</select>
+  	
+  	<!-- 查询所有文章所在的年段 降序排列 -->
+  	<select id="selectNewsYear" resultType="String">
+  		select DATE_FORMAT(date,'%Y') as year from news GROUP BY year ORDER BY year DESC;
+  	</select>
+  	
+  	<!-- 根据查询条件查找文章 -->
+  	<select id="selectSelective" parameterType="News" resultType="News">
+  		select * from news
+  		<trim prefix="where" suffixOverrides="and">
+  			<if test="date!=null">
+  				date like "%"#{date}"%" and
+  			</if>
+  			<if test="author">
+  				author like "%"#{author}"%" and
+  			</if>
+  			<if test="title">
+  				title like "%"#{title}"%" and
+  			</if>
+  			<if test="context">
+  				context like "%"#{context}"%" and
+  			</if>
+  			<if test="classesId!=null">
+  				classes_id = #{classesId} and
+  			</if>
+  			<if test="type!=null">
+  				type = #{type}
+  			</if>
+  		</trim>
+  		ORDER BY date DESC
+  	</select>
+  	
+  	<insert id="insertSelective" parameterType="News" keyProperty="id"  useGeneratedKeys="true">
+		insert into news(title,context,date,author,source,classes_id,type) values
+						(#{title},#{context},#{date},#{author},#{source},#{classesId},#{type});  	
+  	</insert>
+  	
+  	<insert id="insertNewsImg" parameterType="Picture">
+  		insert into news_picture(path, news_id) values (#{path}, #{newsId})
+  	</insert>
+  	
+  	<select id="selectNewsCover" parameterType="Picture" resultType="Picture">
+  		select * from news_picture where news_id = #{newsId} limit 0, 1
+  	</select>
+  	
+  	<!-- 首页轮播图 -->
+  	<select id="selectNewsAllImg" resultMap="BaseMap">
+  		select path, news_id from news_picture limit 0, 5;
+  	</select>
+  	
+  	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from news where id=#{id}
+  	</delete>
+</mapper>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.LessonMapper" >
+  	<resultMap type="Lesson" id="BaseMap">
+  		<id column="id" property="id"/>
+  		<result column="name" property="name"/>
+  		<result column="startTime" property="startTime"/>
+  		<result column="endTime" property="endTime"/>
+  		<result column="content" property="content"/>
+  		<result column="classesId" property="classesId"/>
+  	</resultMap>
+
+	<update id="updateSelective" parameterType="Lesson">
+		update lesson
+		<set>
+			<if test="classId != null">
+				class_id = #{classId},
+			</if>
+			<if test="userId != null">
+				user_id = #{userId},
+			</if>
+			<if test="roomId != null">
+				room_id = #{roomId},
+			</if>
+			<if test="content != null">
+				content = #{content},
+			</if>
+			<if test="evaluate != null">
+				evaluate = #{evaluate},
+			</if>
+			<if test="remark != null">
+				remark = #{remark},
+			</if>
+			<if test="address != null">
+				address = #{address},
+			</if>
+			<if test="isVideoOpen != null">
+				is_video_open = #{isVideoOpen},
+			</if>
+			<if test="status != null">
+				status = #{status},
+			</if>
+			<if test="startTime != null">
+				start_time = #{startTime},
+			</if>
+			<if test="endTime != null">
+				end_time = #{endTime},
+			</if>
+			<if test="createTime != null">
+				create_time = #{createTime},
+			</if>
+			<if test="modifyTime != null">
+				modify_time = #{modifyTime},
+			</if>
+			<if test="state != null">
+				state = #{state},
+			</if>
+		</set>
+		where id = #{id}
+	</update>
+	
+  	<insert id="insertSelective" parameterType="Lesson">
+  		insert into lesson (name, start_time, end_time, content, classes_id) values(#{name}, #{startTime},#{endTime},#{content},#{classesId})
+  	</insert>
+  	
+  	<select id="selectClassLesson" parameterType="int" resultType="Lesson">
+  		select * from Lesson where class_id = #{id}
+  	</select>
+  	
+  	 <delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from lesson where id =#{id}
+  	</delete>
+  	
+	<select id="findLessonByDateRange" parameterType="lesson" resultType="Lesson">
+		select id,t.start_time as startTime,t.end_time as endTime, t.name from
+		lesson t
+		where t.classes_id=#{classesId}
+		and <![CDATA[t.start_time >= #{startTime} and t.end_time <= #{endTime}]]>
+	</select>
+  	
+</mapper>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.laboratory.dao.ClassesPictureMapper" >
+  	
+ 	<resultMap type="ClassesPicture" id="BaseMap">
+  		<id column="id" property="id"/>
+  		<result column="path" property="path"/>
+  		<result column="description" property="description"/>
+  		<result column="state" property="state"/>
+  		<result column="research_id" property="researchId"/>
+  	</resultMap>
+ 	
+ 	<!-- 插入研究成果 -->
+  	<insert id="insertSelective" parameterType="ClassesPicture">
+  		insert into classes_picture (path,state,description,classes_id) values(#{path},#{state},#{description},#{classesId})
+  	</insert>
+ 	
+ 	<update id="updateSelective" parameterType="int">
+  		update classes_picture set
+  		<if test="state!=null">
+  			state=#{state}
+  		</if>
+  		<if test="description!=null">
+  			,description=#{description}
+  		</if>
+  		where id = #{id}
+  	</update>
+ 	
+ 	<delete id="deleteByPrimaryKey" parameterType="int">
+  		delete from classes_picture where id = #{id}
+  	</delete>
+ 	
+ 	
+ 	<!-- 根据研究ID查询图片集 -->
+ 	<select id="selectPictureByResearchId" resultType="ClassesPicture" parameterType="int">
+		select * from classes_picture where classes_id=#{id} 		
+ 	</select>
+ 	
+ 	
+  	<!-- 分页查询图片 -->
+  	<select id="selectByPage" resultType="ClassesPicture">
+  		select * from classes_picture order by classes_id asc
+  	</select>
+  	
+  	<select id="selectByPrimaryKey" parameterType="int" resultMap="BaseMap">
+  		select * from classes_picture where id = #{id}
+  	</select>
+  	
+  	<!-- 根据查询条件查询研究成果 -->
+  	<select id="selectSelective" parameterType="ClassesPicture" resultMap="BaseMap">
+  		select * from classes_picture 
+  		<trim prefix="where" suffixOverrides="and">
+  			<if test="description">
+  				description like "%"#{description}"%" and
+  			</if>
+  			<if test="state!=null">
+  				state = #{state} and
+  			</if>
+  			<if test="classesId!=null">
+  				classes_id = #{classesId}
+  			</if>
+  		</trim>
+  		<!-- order by date desc -->
+  	</select>
+  	
+  	
+</mapper>
